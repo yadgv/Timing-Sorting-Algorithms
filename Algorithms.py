@@ -87,44 +87,54 @@ def randomList(size, maxValue=1000, startValue=0):
     return [random.randint(0, maxValue) for _ in range(size+startValue)]
 
 def timeSort(sortFunction, lst, *args):
-    start_time = time.time()
+    startTime = time.time()
     sortFunction(lst, *args) if args else sortFunction(lst)
-    end_time = time.time()
-    return (end_time - start_time)
+    endTime = time.time()
+    return (endTime - startTime)
 
 def test(size, jump=1, maxValue=1000, startValue=0):
-    global sizes, bubbleTimes, mergeTimes, countTimes, stoogeTimes, itteration, csvData, colLabels, tableData
+    global sizes, bubbleTimes, mergeTimes, countTimes, stoogeTimes, itteration, csvData, colLabels, tableData, valueSize
+    valueSize = maxValue
     itteration = jump
 
     sizes = list(range(0+startValue, size + 1, jump))
+    pastBubbleTimes, pastMergeTimes, pastCountTimes, pastStoogeTimes = [0], [0], [0], [0]
 
     for size in sizes:
         print("creating list....")
         lst = randomList(size, maxValue, startValue)
         print(f"Sorting {size} Numbers...")
-        if size <= 0:
-            bubbleTimes.append(timeSort(bubbleSort, lst.copy()))
+        if pastBubbleTimes[-1] < 0:
+            timing = timeSort(bubbleSort, lst.copy())
+            bubbleTimes.append(timing)
+            pastBubbleTimes.append(timing)
             print("Bubble Sort done sorting.")
         else:
             print("Number set too large for bubble sort to complete in a reasondable amount of time")
             bubbleTimes.append(None)
 
-        if size <= 0:
-            stoogeTimes.append(timeSort(stoogeSort, lst.copy(), 0, len(lst) - 1))
+        if pastStoogeTimes[-1] < 0:
+            timing = timeSort(stoogeSort, lst.copy(), 0, len(lst) - 1)
+            stoogeTimes.append(timing)
+            pastStoogeTimes.append(timing)
             print("Stooge Sort done sorting.")
         else:
             print("Number set too large for Stooge sort to complete in a reasondable amount of time")
             stoogeTimes.append(None)
         
-        if size <= 10000000000000:
-            mergeTimes.append(timeSort(mergeSort, lst.copy()))
+        if pastMergeTimes[-1] < 0:
+            timing = timeSort(mergeSort, lst.copy())
+            mergeTimes.append(timing)
+            pastMergeTimes.append(timing)
             print("Merge Sort done sorting.")
         else:
             print("Number set too large for Merge sort to complete in a reasondable amount of time")
             mergeTimes.append(None)
         
-        if size <= 1000000000000:
-            countTimes.append(timeSort(countSort, lst.copy()))
+        if pastCountTimes[-1] < 5:
+            timing = timeSort(countSort, lst.copy())
+            countTimes.append(timing)
+            pastCountTimes.append(timing)
             print("Count Sort done sorting.")
         else:
             print("Number set too large for Count sort to complete in a reasondable amount of time")
@@ -179,7 +189,7 @@ def savaData():
 
 
     timeStamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    saveFolderName = f"{timeStamp}, Size={sizes[-1]}, Jump={itteration}"
+    saveFolderName = f"{timeStamp}, Size={sizes[-1]}, Jump={itteration}, Range={valueSize}"
     os.makedirs(f"dataLists/{saveFolderName}", exist_ok=True)
 
     fileName = f"dataLists/{saveFolderName}/Data.csv"
@@ -226,7 +236,7 @@ def savaData():
 
 
 
-test(10, startValue=10, jump=1, maxValue=1000000000)
+test(1000000000, startValue=1000000000, jump=1, maxValue=100)
 
 savaData()
 
